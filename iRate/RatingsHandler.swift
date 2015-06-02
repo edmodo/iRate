@@ -16,8 +16,14 @@ public class RatingsHandler : NSObject
     private override init()
     {
         super.init()
-        
-        self.configureiRate()
+    }
+    
+    public func setup(shouldAllowRatings:Bool)
+    {
+        if (shouldAllowRatings)
+        {
+            self.configureiRate()
+        }
     }
     
     private func configureiRate()
@@ -44,7 +50,7 @@ public class RatingsHandler : NSObject
         iRate.sharedInstance().rateButtonLabel = NSLocalizedString("Rate It Now", comment: "iRate accept button")
     }
     
-    internal func logEvent()
+    public func logEvent()
     {
         //increment events count and prompt rating alert if all criteria are met
         //cretieria: 2 replies or detail view taps or a combination of the 2.
