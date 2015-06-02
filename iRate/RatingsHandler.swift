@@ -7,6 +7,7 @@
 //
 
 import Foundation
+import EDMixpanel
 
 public class RatingsHandler : NSObject
 {
@@ -17,7 +18,6 @@ public class RatingsHandler : NSObject
         super.init()
         
         self.configureiRate()
-        
     }
     
     private func configureiRate()
@@ -30,6 +30,11 @@ public class RatingsHandler : NSObject
         iRate.sharedInstance().promptAtLaunch = false
         
         iRate.sharedInstance().delegate = self
+
+        if (debugBuild)
+        {
+           iRate.sharedInstance().onlyPromptIfLatestVersion = false
+        }
         
         //overriding the default iRate strings
         iRate.sharedInstance().messageTitle = NSLocalizedString("Rate MyApp", comment: "iRate message title")
@@ -45,37 +50,27 @@ public class RatingsHandler : NSObject
         //cretieria: 2 replies or detail view taps or a combination of the 2.
         iRate.sharedInstance().logEvent(false)
     }
-    
-    private func checkUser()
-    {
-        
-    }
-    
-    private func resetUserDefaults()
-    {
-        
-    }
 }
 
 extension RatingsHandler : iRateDelegate
 {
     public func iRateDidPromptForRating()
     {
-        
+        EDMixpanel.sharedInstance.trackEvent("", params:[String : AnyObject]())
     }
     
     public func iRateUserDidAttemptToRateApp()
     {
-        
+        EDMixpanel.sharedInstance.trackEvent("", params:[String : AnyObject]())
     }
     
     public func iRateUserDidDeclineToRateApp()
     {
-        
+        EDMixpanel.sharedInstance.trackEvent("", params:[String : AnyObject]())
     }
     
     public func iRateUserDidRequestReminderToRateApp()
     {
-        
+        EDMixpanel.sharedInstance.trackEvent("", params:[String : AnyObject]())
     }
 }
