@@ -18,18 +18,18 @@ public class RatingsHandler : NSObject
         super.init()
     }
     
-    public func setup(shouldAllowRatings:Bool)
+    public func setup(shouldAllowRatings:Bool, withNumOfEvents:UInt)
     {
         if (shouldAllowRatings)
         {
-            self.configureiRate()
+            self.configureiRate(withNumOfEvents)
         }
     }
     
-    private func configureiRate()
+    private func configureiRate(eventCount:UInt)
     {
         //configure iRate
-        iRate.sharedInstance().eventsUntilPrompt = 2
+        iRate.sharedInstance().eventsUntilPrompt = eventCount
         iRate.sharedInstance().daysUntilPrompt = 0
         iRate.sharedInstance().usesUntilPrompt = 2
         iRate.sharedInstance().remindPeriod = 7
@@ -62,21 +62,21 @@ extension RatingsHandler : iRateDelegate
 {
     public func iRateDidPromptForRating()
     {
-        EDMixpanel.sharedInstance.trackEvent("", params:[String : AnyObject]())
+        EDMixpanel.sharedInstance.trackEvent("rate-app_view", params:[String : AnyObject]())
     }
     
     public func iRateUserDidAttemptToRateApp()
     {
-        EDMixpanel.sharedInstance.trackEvent("", params:[String : AnyObject]())
+        EDMixpanel.sharedInstance.trackEvent("rate-app_rate-click", params:[String : AnyObject]())
     }
     
     public func iRateUserDidDeclineToRateApp()
     {
-        EDMixpanel.sharedInstance.trackEvent("", params:[String : AnyObject]())
+        EDMixpanel.sharedInstance.trackEvent("rate-app_no-click", params:[String : AnyObject]())
     }
     
     public func iRateUserDidRequestReminderToRateApp()
     {
-        EDMixpanel.sharedInstance.trackEvent("", params:[String : AnyObject]())
+        EDMixpanel.sharedInstance.trackEvent("rate-app_remind-click", params:[String : AnyObject]())
     }
 }
