@@ -7,7 +7,10 @@
 //
 
 import Foundation
-import EDMixpanel
+
+#if EDMIXPANEL
+    import EDMixpanel
+#endif
 
 public class RatingsHandler : NSObject
 {
