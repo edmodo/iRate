@@ -31,7 +31,7 @@ public class RatingsHandler : NSObject
         //configure iRate
         iRate.sharedInstance().eventsUntilPrompt = eventCount
         iRate.sharedInstance().daysUntilPrompt = 0
-        iRate.sharedInstance().usesUntilPrompt = 2
+        iRate.sharedInstance().usesUntilPrompt = 1
         iRate.sharedInstance().remindPeriod = 7
         iRate.sharedInstance().promptAtLaunch = false
         
