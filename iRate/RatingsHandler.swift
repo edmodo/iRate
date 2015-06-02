@@ -18,15 +18,15 @@ public class RatingsHandler : NSObject
         super.init()
     }
     
-    public func setup(shouldAllowRatings:Bool, withNumOfEvents:UInt)
+    public func setup(shouldAllowRatings:Bool, numOfEvents:UInt, andMessageTitle:String)
     {
         if (shouldAllowRatings)
         {
-            self.configureiRate(withNumOfEvents)
+            self.configureiRate(numOfEvents, messageTitle:andMessageTitle)
         }
     }
     
-    private func configureiRate(eventCount:UInt)
+    private func configureiRate(eventCount:UInt, messageTitle:String)
     {
         //configure iRate
         iRate.sharedInstance().eventsUntilPrompt = eventCount
@@ -43,7 +43,7 @@ public class RatingsHandler : NSObject
         }
         
         //overriding the default iRate strings
-        iRate.sharedInstance().messageTitle = NSLocalizedString("Like our Edmodo for Parents app?", comment: "iRate message title")
+        iRate.sharedInstance().messageTitle = NSLocalizedString(messageTitle, comment: "iRate message title")
         iRate.sharedInstance().message = NSLocalizedString("Rate it now in the app store!", comment: "iRate message")
         iRate.sharedInstance().cancelButtonLabel = NSLocalizedString("No Thanks", comment: "iRate decline button")
         iRate.sharedInstance().remindButtonLabel = NSLocalizedString("Remind Me Later", comment: "iRate remind button")
