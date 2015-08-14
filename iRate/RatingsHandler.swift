@@ -7,6 +7,7 @@
 //
 
 import Foundation
+import EDMPlatform
 
 #if EDMIXPANEL
     import EDMixpanel
