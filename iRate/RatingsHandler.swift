@@ -50,7 +50,7 @@ public class RatingsHandler : NSObject
         }
         
         //overriding the default iRate strings
-        iRate.sharedInstance().messageTitle = NSLocalizedString(messageTitle, comment: "iRate message title")
+        iRate.sharedInstance().messageTitle = messageTitle;
         iRate.sharedInstance().message = NSLocalizedString("Rate it now in the App Store!", comment: "iRate message")
         iRate.sharedInstance().cancelButtonLabel = NSLocalizedString("No Thanks", comment: "iRate decline button")
         iRate.sharedInstance().remindButtonLabel = NSLocalizedString("Remind Me Later", comment: "iRate remind button")
