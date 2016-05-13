@@ -9,9 +9,7 @@
 import Foundation
 import EDMPlatform
 
-#if EDMIXPANEL
-    import EDMixpanel
-#endif
+import EDMixpanel
 
 public class RatingsHandler : NSObject
 {
