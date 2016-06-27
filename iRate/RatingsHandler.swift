@@ -16,18 +16,22 @@ public class RatingsHandler : NSObject
     static let sharedInstance = RatingsHandler()
 
     var shouldAllowEventLogging:Bool = false
+    var nextEventWillPrompt: Bool = false
+    var currentNumOfEvents: UInt = 0
+    var numOfEventsTillPrompt: UInt = 0
     
     private override init()
     {
         super.init()
     }
     
-    public func setup(shouldAllowRatings:Bool, numOfEvents:UInt, andMessageTitle:String)
+    public func setup(shouldAllowRatings:Bool, numOfEventsTillPrompt:UInt, andMessageTitle:String)
     {
         if (shouldAllowRatings)
         {
             self.shouldAllowEventLogging = true
-            self.configureiRate(numOfEvents, messageTitle:andMessageTitle)
+            self.numOfEventsTillPrompt = numOfEventsTillPrompt
+            self.configureiRate(numOfEventsTillPrompt, messageTitle:andMessageTitle)
         }
     }
     
@@ -59,8 +63,11 @@ public class RatingsHandler : NSObject
     {
         if (shouldAllowEventLogging)
         {
+            self.currentNumOfEvents += 1
+            self.nextEventWillPrompt = (self.numOfEventsTillPrompt - self.currentNumOfEvents == 1)
+            
             //increment events count and prompt rating alert if all criteria are met
-            //cretieria: 2 replies or detail view taps or a combination of the 2.
+            //criteria: 2 replies or detail view taps or a combination of the 2.
             iRate.sharedInstance().logEvent(false)
         }
     }
