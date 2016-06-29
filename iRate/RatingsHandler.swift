@@ -8,8 +8,12 @@
 
 import Foundation
 import EDMPlatform
-
 import EDMixpanel
+
+enum RatingsKeys : String
+{
+    case shouldPromptForRatings = "PromptForRatings"
+}
 
 public class RatingsHandler : NSObject
 {
