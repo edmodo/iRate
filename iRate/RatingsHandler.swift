@@ -18,19 +18,27 @@ public class RatingsHandler : NSObject
     var shouldAllowEventLogging:Bool = false
     var nextEventWillPrompt: Bool = false
     var currentNumOfEvents: UInt = 0
-    var numOfEventsTillPrompt: UInt = 0
+    var userDidSeeiRatePrompt: Bool
+    {
+        get
+        {
+            return iRate.sharedInstance().declinedThisVersion == true ||
+                    iRate.sharedInstance().ratedThisVersion == true
+        }
+    }
     
     private override init()
     {
         super.init()
     }
     
+    
+    
     public func setup(shouldAllowRatings:Bool, numOfEventsTillPrompt:UInt, andMessageTitle:String)
     {
         if (shouldAllowRatings)
         {
             self.shouldAllowEventLogging = true
-            self.numOfEventsTillPrompt = numOfEventsTillPrompt
             self.configureiRate(numOfEventsTillPrompt, messageTitle:andMessageTitle)
         }
     }
@@ -65,9 +73,9 @@ public class RatingsHandler : NSObject
         {
             self.currentNumOfEvents += 1
             
-            if (self.currentNumOfEvents < self.numOfEventsTillPrompt)
-            {
-                self.nextEventWillPrompt = (self.numOfEventsTillPrompt - self.currentNumOfEvents == 1)
+            if (self.currentNumOfEvents < iRate.sharedInstance().eventsUntilPrompt)
+            {    
+                self.nextEventWillPrompt = (iRate.sharedInstance().eventsUntilPrompt - self.currentNumOfEvents == 1)
             }
             
             //increment events count and prompt rating alert if all criteria are met
