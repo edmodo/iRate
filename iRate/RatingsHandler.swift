@@ -64,7 +64,11 @@ public class RatingsHandler : NSObject
         if (shouldAllowEventLogging)
         {
             self.currentNumOfEvents += 1
-            self.nextEventWillPrompt = (self.numOfEventsTillPrompt - self.currentNumOfEvents == 1)
+            
+            if (self.currentNumOfEvents < self.numOfEventsTillPrompt)
+            {
+                self.nextEventWillPrompt = (self.numOfEventsTillPrompt - self.currentNumOfEvents == 1)
+            }
             
             //increment events count and prompt rating alert if all criteria are met
             //criteria: 2 replies or detail view taps or a combination of the 2.
