@@ -13,14 +13,15 @@ import MessageUI
 
 enum RatingsKey : String
 {
-    case shouldPromptForRatings = "PromptForRatings"
+    case ShouldPromptForRatings = "PromptForRatings"
+    case NumOfUses = "NumOfUses"
 }
 
 public class RatingsHandler : NSObject
 {
     static let sharedInstance = RatingsHandler()
     
-    let useCountForRatingsPrompt: UInt = 3
+    let useCountForRatingsPrompt: Int = 3
 
     private override init()
     {
@@ -40,7 +41,7 @@ public class RatingsHandler : NSObject
         //configure iRate
         iRate.sharedInstance().eventsUntilPrompt = 0
         iRate.sharedInstance().usesUntilPrompt = 0 // total num of launches since installation
-        iRate.sharedInstance().daysUntilPrompt = 3
+        iRate.sharedInstance().daysUntilPrompt = 0 // TESTING THIS
         iRate.sharedInstance().remindPeriod = 7
         iRate.sharedInstance().promptAtLaunch = false
         
@@ -80,7 +81,7 @@ extension RatingsHandler
             },
             noActionBlock:
             {(action) in
-                NSUserDefaults.standardUserDefaults().setBool(false, forKey: RatingsKey.shouldPromptForRatings.rawValue)
+                NSUserDefaults.standardUserDefaults().setBool(false, forKey: RatingsKey.ShouldPromptForRatings.rawValue)
                 
                 if let noBlock = noActionBlock
                 { noBlock(action: action) }
@@ -138,7 +139,7 @@ extension RatingsHandler : iRateDelegate
 {
     public func iRateDidPromptForRating()
     {
-        NSUserDefaults.standardUserDefaults().setBool(false, forKey: RatingsKey.shouldPromptForRatings.rawValue)
+        NSUserDefaults.standardUserDefaults().setBool(false, forKey: RatingsKey.ShouldPromptForRatings.rawValue)
         EDMixpanel.sharedInstance.trackEvent("rate-app_view", params:[String : AnyObject]())
     }
     
@@ -149,7 +150,7 @@ extension RatingsHandler : iRateDelegate
     
     public func iRateUserDidDeclineToRateApp()
     {
-        NSUserDefaults.standardUserDefaults().setBool(false, forKey: RatingsKey.shouldPromptForRatings.rawValue)
+        NSUserDefaults.standardUserDefaults().setBool(false, forKey: RatingsKey.ShouldPromptForRatings.rawValue)
         EDMixpanel.sharedInstance.trackEvent("rate-app_no-click", params:[String : AnyObject]())
     }
     
