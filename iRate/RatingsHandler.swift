@@ -64,8 +64,6 @@ extension RatingsHandler
     internal func ratingsPrePromptAlert(yesActionBlock:((action: UIAlertAction) -> Void)? = nil,
                                         noActionBlock:((action: UIAlertAction) -> Void)? = nil) -> UIAlertController
     {
-        NSUserDefaults.standardUserDefaults().setBool(true, forKey: RatingsKey.ShouldBlockPromptOnLaunch.rawValue)
-        
         let message = NSLocalizedString("Do you like our App?", comment: "Do you like our App?")
         let alertController = UIAlertController.alertWithPrompt(
             nil,
@@ -111,7 +109,7 @@ extension RatingsHandler
         return alertController
     }
     
-    internal func populateSupportEmail() -> MFMailComposeViewController
+    internal func populateSupportEmail() -> MFMailComposeViewController?
     {
         let mailController = MFMailComposeViewController.init()
         if MFMailComposeViewController.canSendMail()
