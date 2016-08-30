@@ -38,7 +38,7 @@ public class RatingsHandler : NSObject
         //configure iRate
         iRate.sharedInstance().eventsUntilPrompt = 0
         iRate.sharedInstance().usesUntilPrompt = 0 // total num of launches since installation
-        iRate.sharedInstance().daysUntilPrompt = 0 // TESTING THIS
+        iRate.sharedInstance().daysUntilPrompt = 3
         iRate.sharedInstance().remindPeriod = 7
         iRate.sharedInstance().promptAtLaunch = false
         
