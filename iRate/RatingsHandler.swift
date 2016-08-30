@@ -28,12 +28,9 @@ public class RatingsHandler : NSObject
         super.init()
     }
     
-    public func setup(shouldAllowRatings:Bool, messageTitle:String)
+    public func setup(messageTitle title:String)
     {
-        if (shouldAllowRatings)
-        {
-            self.configureiRate(messageTitle)
-        }
+        self.configureiRate(title)
     }
     
     private func configureiRate(messageTitle:String)
@@ -81,7 +78,7 @@ extension RatingsHandler
             },
             noActionBlock:
             {(action) in
-                NSUserDefaults.standardUserDefaults().setBool(false, forKey: RatingsKey.ShouldBlockPromptOnLaunch.rawValue)
+                NSUserDefaults.standardUserDefaults().setBool(true, forKey: RatingsKey.ShouldBlockPromptOnLaunch.rawValue)
                 
                 if let noBlock = noActionBlock
                 { noBlock(action: action) }
