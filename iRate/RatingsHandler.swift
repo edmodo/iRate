@@ -19,43 +19,28 @@ enum RatingsKey : String
 public class RatingsHandler : NSObject
 {
     static let sharedInstance = RatingsHandler()
-
+    
     let useCountForRatingsPrompt: UInt = 3
-    
-    var shouldAllowEventLogging:Bool = false
-    var nextEventWillPrompt: Bool = false
-    var currentNumOfEvents: UInt = 0
-    var userDidSeeiRatePrompt: Bool
-    {
-        get
-        {
-            return iRate.sharedInstance().declinedThisVersion == true ||
-                    iRate.sharedInstance().ratedThisVersion == true
-        }
-    }
-    
+
     private override init()
     {
         super.init()
     }
     
-    
-    
-    public func setup(shouldAllowRatings:Bool, numOfEventsTillPrompt:UInt, andMessageTitle:String)
+    public func setup(shouldAllowRatings:Bool, messageTitle:String)
     {
         if (shouldAllowRatings)
         {
-            self.shouldAllowEventLogging = false
-            self.configureiRate(numOfEventsTillPrompt, messageTitle:andMessageTitle)
+            self.configureiRate(messageTitle)
         }
     }
     
-    private func configureiRate(eventCount:UInt, messageTitle:String)
+    private func configureiRate(messageTitle:String)
     {
         //configure iRate
-        iRate.sharedInstance().eventsUntilPrompt = eventCount
-        iRate.sharedInstance().daysUntilPrompt = 0
-        iRate.sharedInstance().usesUntilPrompt = 10
+        iRate.sharedInstance().eventsUntilPrompt = 0
+        iRate.sharedInstance().usesUntilPrompt = 0 // total num of launches since installation
+        iRate.sharedInstance().daysUntilPrompt = 3
         iRate.sharedInstance().remindPeriod = 7
         iRate.sharedInstance().promptAtLaunch = false
         
@@ -73,23 +58,6 @@ public class RatingsHandler : NSObject
         iRate.sharedInstance().remindButtonLabel = NSLocalizedString("Remind Me Later", comment: "iRate remind button")
         iRate.sharedInstance().rateButtonLabel = NSLocalizedString("Rate Now", comment: "iRate accept button")
     }
-    
-    public func logEvent()
-    {
-        if (shouldAllowEventLogging)
-        {
-            self.currentNumOfEvents += 1
-            
-            if (self.currentNumOfEvents < iRate.sharedInstance().eventsUntilPrompt)
-            {    
-                self.nextEventWillPrompt = (iRate.sharedInstance().eventsUntilPrompt - self.currentNumOfEvents == 1)
-            }
-            
-            //increment events count and prompt rating alert if all criteria are met
-            //criteria: 2 replies or detail view taps or a combination of the 2.
-            iRate.sharedInstance().logEvent(false)
-        }
-    }
 }
 
 // MARK: - Ratings Pre-Prompt Alerts
@@ -104,11 +72,8 @@ extension RatingsHandler
             nil,
             message: message,
             yesActionBlock:
-            {[weak self] (action) in
-                let shouldPrompt = NSUserDefaults.standardUserDefaults().boolForKey(RatingsKey.shouldPromptForRatings.rawValue)
-                
-                if shouldPrompt == true && self?.userDidSeeiRatePrompt == false
-                { iRate.sharedInstance().promptForRating() }
+            {(action) in
+                iRate.sharedInstance().promptIfNetworkAvailable()
                 
                 if let yesBlock = yesActionBlock
                 { yesBlock(action: action) }
@@ -173,6 +138,7 @@ extension RatingsHandler : iRateDelegate
 {
     public func iRateDidPromptForRating()
     {
+        NSUserDefaults.standardUserDefaults().setBool(false, forKey: RatingsKey.shouldPromptForRatings.rawValue)
         EDMixpanel.sharedInstance.trackEvent("rate-app_view", params:[String : AnyObject]())
     }
     
@@ -183,6 +149,7 @@ extension RatingsHandler : iRateDelegate
     
     public func iRateUserDidDeclineToRateApp()
     {
+        NSUserDefaults.standardUserDefaults().setBool(false, forKey: RatingsKey.shouldPromptForRatings.rawValue)
         EDMixpanel.sharedInstance.trackEvent("rate-app_no-click", params:[String : AnyObject]())
     }
     
