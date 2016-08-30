@@ -64,8 +64,9 @@ extension RatingsHandler
     internal func ratingsPrePromptAlert(yesActionBlock:((action: UIAlertAction) -> Void)? = nil,
                                         noActionBlock:((action: UIAlertAction) -> Void)? = nil) -> UIAlertController
     {
-        let message = NSLocalizedString("Do you like our App?", comment: "Do you like our App?")
+        NSUserDefaults.standardUserDefaults().setBool(true, forKey: RatingsKey.ShouldBlockPromptOnLaunch.rawValue)
         
+        let message = NSLocalizedString("Do you like our App?", comment: "Do you like our App?")
         let alertController = UIAlertController.alertWithPrompt(
             nil,
             message: message,
@@ -78,8 +79,6 @@ extension RatingsHandler
             },
             noActionBlock:
             {(action) in
-                NSUserDefaults.standardUserDefaults().setBool(true, forKey: RatingsKey.ShouldBlockPromptOnLaunch.rawValue)
-                
                 if let noBlock = noActionBlock
                 { noBlock(action: action) }
             }
@@ -136,25 +135,21 @@ extension RatingsHandler : iRateDelegate
 {
     public func iRateDidPromptForRating()
     {
-        NSUserDefaults.standardUserDefaults().setBool(true, forKey: RatingsKey.ShouldBlockPromptOnLaunch.rawValue)
         EDMixpanel.sharedInstance.trackEvent("rate-app_view", params:[String : AnyObject]())
     }
     
     public func iRateUserDidAttemptToRateApp()
     {
-        NSUserDefaults.standardUserDefaults().setBool(true, forKey: RatingsKey.ShouldBlockPromptOnLaunch.rawValue)
         EDMixpanel.sharedInstance.trackEvent("rate-app_rate-click", params:[String : AnyObject]())
     }
     
     public func iRateUserDidDeclineToRateApp()
     {
-        NSUserDefaults.standardUserDefaults().setBool(true, forKey: RatingsKey.ShouldBlockPromptOnLaunch.rawValue)
         EDMixpanel.sharedInstance.trackEvent("rate-app_no-click", params:[String : AnyObject]())
     }
     
     public func iRateUserDidRequestReminderToRateApp()
     {
-        NSUserDefaults.standardUserDefaults().setBool(true, forKey: RatingsKey.ShouldBlockPromptOnLaunch.rawValue)
         EDMixpanel.sharedInstance.trackEvent("rate-app_remind-click", params:[String : AnyObject]())
     }
 }
