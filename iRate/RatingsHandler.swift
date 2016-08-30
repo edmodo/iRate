@@ -13,8 +13,7 @@ import MessageUI
 
 enum RatingsKey : String
 {
-    case ShouldPromptForRatings = "PromptForRatings"
-    case NumOfUses = "NumOfUses"
+    case NumOfAppLaunches = "NumOfAppLaunchesSince-v1.6.0"
 }
 
 public class RatingsHandler : NSObject
@@ -28,12 +27,9 @@ public class RatingsHandler : NSObject
         super.init()
     }
     
-    public func setup(shouldAllowRatings:Bool, messageTitle:String)
+    public func setup(messageTitle title:String)
     {
-        if (shouldAllowRatings)
-        {
-            self.configureiRate(messageTitle)
-        }
+        self.configureiRate(title)
     }
     
     private func configureiRate(messageTitle:String)
@@ -81,8 +77,6 @@ extension RatingsHandler
             },
             noActionBlock:
             {(action) in
-                NSUserDefaults.standardUserDefaults().setBool(false, forKey: RatingsKey.ShouldPromptForRatings.rawValue)
-                
                 if let noBlock = noActionBlock
                 { noBlock(action: action) }
             }
@@ -139,7 +133,6 @@ extension RatingsHandler : iRateDelegate
 {
     public func iRateDidPromptForRating()
     {
-        NSUserDefaults.standardUserDefaults().setBool(false, forKey: RatingsKey.ShouldPromptForRatings.rawValue)
         EDMixpanel.sharedInstance.trackEvent("rate-app_view", params:[String : AnyObject]())
     }
     
@@ -150,7 +143,6 @@ extension RatingsHandler : iRateDelegate
     
     public func iRateUserDidDeclineToRateApp()
     {
-        NSUserDefaults.standardUserDefaults().setBool(false, forKey: RatingsKey.ShouldPromptForRatings.rawValue)
         EDMixpanel.sharedInstance.trackEvent("rate-app_no-click", params:[String : AnyObject]())
     }
     
