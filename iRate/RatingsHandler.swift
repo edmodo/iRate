@@ -13,8 +13,8 @@ import MessageUI
 
 enum RatingsKey : String
 {
-    case ShouldPromptForRatings = "PromptForRatings"
-    case NumOfUses = "NumOfUses"
+    case ShouldBlockPromptOnLaunch = "ShouldBlockPromptOnLaunch"
+    case NumOfUses = "NumOfUsesSince-v1.6.0"
 }
 
 public class RatingsHandler : NSObject
@@ -81,7 +81,7 @@ extension RatingsHandler
             },
             noActionBlock:
             {(action) in
-                NSUserDefaults.standardUserDefaults().setBool(false, forKey: RatingsKey.ShouldPromptForRatings.rawValue)
+                NSUserDefaults.standardUserDefaults().setBool(false, forKey: RatingsKey.ShouldBlockPromptOnLaunch.rawValue)
                 
                 if let noBlock = noActionBlock
                 { noBlock(action: action) }
@@ -139,23 +139,25 @@ extension RatingsHandler : iRateDelegate
 {
     public func iRateDidPromptForRating()
     {
-        NSUserDefaults.standardUserDefaults().setBool(false, forKey: RatingsKey.ShouldPromptForRatings.rawValue)
+        NSUserDefaults.standardUserDefaults().setBool(true, forKey: RatingsKey.ShouldBlockPromptOnLaunch.rawValue)
         EDMixpanel.sharedInstance.trackEvent("rate-app_view", params:[String : AnyObject]())
     }
     
     public func iRateUserDidAttemptToRateApp()
     {
+        NSUserDefaults.standardUserDefaults().setBool(true, forKey: RatingsKey.ShouldBlockPromptOnLaunch.rawValue)
         EDMixpanel.sharedInstance.trackEvent("rate-app_rate-click", params:[String : AnyObject]())
     }
     
     public func iRateUserDidDeclineToRateApp()
     {
-        NSUserDefaults.standardUserDefaults().setBool(false, forKey: RatingsKey.ShouldPromptForRatings.rawValue)
+        NSUserDefaults.standardUserDefaults().setBool(true, forKey: RatingsKey.ShouldBlockPromptOnLaunch.rawValue)
         EDMixpanel.sharedInstance.trackEvent("rate-app_no-click", params:[String : AnyObject]())
     }
     
     public func iRateUserDidRequestReminderToRateApp()
     {
+        NSUserDefaults.standardUserDefaults().setBool(true, forKey: RatingsKey.ShouldBlockPromptOnLaunch.rawValue)
         EDMixpanel.sharedInstance.trackEvent("rate-app_remind-click", params:[String : AnyObject]())
     }
 }
