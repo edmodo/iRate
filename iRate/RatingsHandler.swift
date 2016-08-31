@@ -111,18 +111,23 @@ extension RatingsHandler
     
     internal func populateSupportEmail() -> MFMailComposeViewController?
     {
-        let mailController = MFMailComposeViewController.init()
+        var mailController: MFMailComposeViewController? = nil
+        
         if MFMailComposeViewController.canSendMail()
         {
+            mailController = MFMailComposeViewController.init()
             let currentUser = Platform.sharedInstance.currentUser
             
             let mailSubject = NSLocalizedString("Improve Parents App - iOS", comment: "Improve Parents App - iOS")
             let recipientEmail = NSLocalizedString("support@edmodo.com", comment: "support@edmodo.com")
             let messageBody = NSLocalizedString("Hello Edmodo Staff,\n Here are a few things I think will make the Parents App better:\n", comment: "Help us improve email body")
             
-            mailController.setToRecipients([recipientEmail])
-            mailController.setSubject("\(mailSubject) (uid:\(currentUser?.ID.nonUniqueIdentifier))")
-            mailController.setMessageBody(messageBody, isHTML: false)
+            if let controller = mailController
+            {
+                controller.setToRecipients([recipientEmail])
+                controller.setSubject("\(mailSubject) (uid:\(currentUser?.ID.nonUniqueIdentifier))")
+                controller.setMessageBody(messageBody, isHTML: false)
+            }
         }
         
         return mailController
