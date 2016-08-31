@@ -9,50 +9,36 @@
 import Foundation
 import EDMPlatform
 import EDMixpanel
+import MessageUI
 
-enum RatingsKeys : String
+enum RatingsKey : String
 {
-    case shouldPromptForRatings = "PromptForRatings"
+    case ShouldBlockPromptOnLaunch = "ShouldBlockPromptOnLaunch"
+    case NumOfUses = "NumOfUsesSince-v1.6.0"
 }
 
 public class RatingsHandler : NSObject
 {
     static let sharedInstance = RatingsHandler()
-
-    var shouldAllowEventLogging:Bool = false
-    var nextEventWillPrompt: Bool = false
-    var currentNumOfEvents: UInt = 0
-    var userDidSeeiRatePrompt: Bool
-    {
-        get
-        {
-            return iRate.sharedInstance().declinedThisVersion == true ||
-                    iRate.sharedInstance().ratedThisVersion == true
-        }
-    }
     
+    let useCountForRatingsPrompt: Int = 3
+
     private override init()
     {
         super.init()
     }
     
-    
-    
-    public func setup(shouldAllowRatings:Bool, numOfEventsTillPrompt:UInt, andMessageTitle:String)
+    public func setup(messageTitle title:String)
     {
-        if (shouldAllowRatings)
-        {
-            self.shouldAllowEventLogging = true
-            self.configureiRate(numOfEventsTillPrompt, messageTitle:andMessageTitle)
-        }
+        self.configureiRate(title)
     }
     
-    private func configureiRate(eventCount:UInt, messageTitle:String)
+    private func configureiRate(messageTitle:String)
     {
         //configure iRate
-        iRate.sharedInstance().eventsUntilPrompt = eventCount
-        iRate.sharedInstance().daysUntilPrompt = 0
-        iRate.sharedInstance().usesUntilPrompt = 10
+        iRate.sharedInstance().eventsUntilPrompt = 0
+        iRate.sharedInstance().usesUntilPrompt = 0 // total num of launches since installation
+        iRate.sharedInstance().daysUntilPrompt = 3
         iRate.sharedInstance().remindPeriod = 7
         iRate.sharedInstance().promptAtLaunch = false
         
@@ -70,22 +56,81 @@ public class RatingsHandler : NSObject
         iRate.sharedInstance().remindButtonLabel = NSLocalizedString("Remind Me Later", comment: "iRate remind button")
         iRate.sharedInstance().rateButtonLabel = NSLocalizedString("Rate Now", comment: "iRate accept button")
     }
-    
-    public func logEvent()
+}
+
+// MARK: - Ratings Pre-Prompt Alerts
+extension RatingsHandler
+{
+    internal func ratingsPrePromptAlert(yesActionBlock:((action: UIAlertAction) -> Void)? = nil,
+                                        noActionBlock:((action: UIAlertAction) -> Void)? = nil) -> UIAlertController
     {
-        if (shouldAllowEventLogging)
-        {
-            self.currentNumOfEvents += 1
-            
-            if (self.currentNumOfEvents < iRate.sharedInstance().eventsUntilPrompt)
-            {    
-                self.nextEventWillPrompt = (iRate.sharedInstance().eventsUntilPrompt - self.currentNumOfEvents == 1)
+        let message = NSLocalizedString("Do you like our App?", comment: "Do you like our App?")
+        let alertController = UIAlertController.alertWithPrompt(
+            nil,
+            message: message,
+            yesActionBlock:
+            {(action) in
+                iRate.sharedInstance().promptIfNetworkAvailable()
+                
+                if let yesBlock = yesActionBlock
+                { yesBlock(action: action) }
+            },
+            noActionBlock:
+            {(action) in
+                if let noBlock = noActionBlock
+                { noBlock(action: action) }
             }
+        )
+        
+        return alertController
+    }
+    
+    internal func helpUsImproveAlert(yesActionBlock:((action: UIAlertAction) -> Void)? = nil,
+                                     noActionBlock:((action: UIAlertAction) -> Void)? = nil) -> UIAlertController
+    {
+        let message = NSLocalizedString("Would you like to help us improve?", comment: "Would you like to help us improve?")
+        let yesTitle = NSLocalizedString("Sure", comment: "Sure")
+        
+        let alertController = UIAlertController.alertWithPrompt(
+            nil, message: message,
+            yesTitle: yesTitle,
+            yesActionBlock:
+            { (action) in
+                if let yesBlock = yesActionBlock
+                { yesBlock(action: action) }
+            },
+            noActionBlock:
+            { (action) in
+                if let noBlock = noActionBlock
+                { noBlock(action: action) }
+            }
+        )
+        
+        return alertController
+    }
+    
+    internal func populateSupportEmail() -> MFMailComposeViewController?
+    {
+        var mailController: MFMailComposeViewController? = nil
+        
+        if MFMailComposeViewController.canSendMail()
+        {
+            mailController = MFMailComposeViewController.init()
+            let currentUser = Platform.sharedInstance.currentUser
             
-            //increment events count and prompt rating alert if all criteria are met
-            //criteria: 2 replies or detail view taps or a combination of the 2.
-            iRate.sharedInstance().logEvent(false)
+            let mailSubject = NSLocalizedString("Improve Parents App - iOS", comment: "Improve Parents App - iOS")
+            let recipientEmail = NSLocalizedString("support@edmodo.com", comment: "support@edmodo.com")
+            let messageBody = NSLocalizedString("Hello Edmodo Staff,\n Here are a few things I think will make the Parents App better:\n", comment: "Help us improve email body")
+            
+            if let controller = mailController
+            {
+                controller.setToRecipients([recipientEmail])
+                controller.setSubject("\(mailSubject) (uid:\(currentUser?.ID.nonUniqueIdentifier))")
+                controller.setMessageBody(messageBody, isHTML: false)
+            }
         }
+        
+        return mailController
     }
 }
 

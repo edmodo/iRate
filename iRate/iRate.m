@@ -655,7 +655,7 @@ static NSString *const iRateMacAppStoreURLFormat = @"macappstore://itunes.apple.
 
         //could not connect
         [self.delegate iRateCouldNotConnectToAppStore:error];
-        [[NSNotificationCenter defaultCenter] postNotificationName:iRateCouldNotConnectToAppStore
+        [[NSNotificationCenter defaultCenter] postNotificationName:iRateCouldNotConnectToAppStore 
                                                             object:error];
     }
 }
