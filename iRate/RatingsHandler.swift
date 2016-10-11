@@ -17,23 +17,23 @@ enum RatingsKey : String
     case NumOfUses = "NumOfUsesSince-v1.6.0"
 }
 
-public class RatingsHandler : NSObject
+open class RatingsHandler : NSObject
 {
     static let sharedInstance = RatingsHandler()
     
     let useCountForRatingsPrompt: Int = 3
 
-    private override init()
+    fileprivate override init()
     {
         super.init()
     }
     
-    public func setup(messageTitle title:String)
+    open func setup(messageTitle title:String)
     {
         self.configureiRate(title)
     }
     
-    private func configureiRate(messageTitle:String)
+    fileprivate func configureiRate(_ messageTitle:String)
     {
         //configure iRate
         iRate.sharedInstance().eventsUntilPrompt = 0
@@ -61,8 +61,8 @@ public class RatingsHandler : NSObject
 // MARK: - Ratings Pre-Prompt Alerts
 extension RatingsHandler
 {
-    internal func ratingsPrePromptAlert(yesActionBlock:((action: UIAlertAction) -> Void)? = nil,
-                                        noActionBlock:((action: UIAlertAction) -> Void)? = nil) -> UIAlertController
+    internal func ratingsPrePromptAlert(_ yesActionBlock:((_ action: UIAlertAction) -> Void)? = nil,
+                                        noActionBlock:((_ action: UIAlertAction) -> Void)? = nil) -> UIAlertController
     {
         let message = NSLocalizedString("Do you like our App?", comment: "Do you like our App?")
         let alertController = UIAlertController.alertWithPrompt(
@@ -73,20 +73,20 @@ extension RatingsHandler
                 iRate.sharedInstance().promptIfNetworkAvailable()
                 
                 if let yesBlock = yesActionBlock
-                { yesBlock(action: action) }
+                { yesBlock(action) }
             },
             noActionBlock:
             {(action) in
                 if let noBlock = noActionBlock
-                { noBlock(action: action) }
+                { noBlock(action) }
             }
         )
         
         return alertController
     }
     
-    internal func helpUsImproveAlert(yesActionBlock:((action: UIAlertAction) -> Void)? = nil,
-                                     noActionBlock:((action: UIAlertAction) -> Void)? = nil) -> UIAlertController
+    internal func helpUsImproveAlert(_ yesActionBlock:((_ action: UIAlertAction) -> Void)? = nil,
+                                     noActionBlock:((_ action: UIAlertAction) -> Void)? = nil) -> UIAlertController
     {
         let message = NSLocalizedString("Would you like to help us improve?", comment: "Would you like to help us improve?")
         let yesTitle = NSLocalizedString("Sure", comment: "Sure")
@@ -97,12 +97,12 @@ extension RatingsHandler
             yesActionBlock:
             { (action) in
                 if let yesBlock = yesActionBlock
-                { yesBlock(action: action) }
+                { yesBlock(action) }
             },
             noActionBlock:
             { (action) in
                 if let noBlock = noActionBlock
-                { noBlock(action: action) }
+                { noBlock(action) }
             }
         )
         
