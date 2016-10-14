@@ -116,7 +116,7 @@ extension RatingsHandler
         if MFMailComposeViewController.canSendMail()
         {
             mailController = MFMailComposeViewController.init()
-            let currentUser = Platform.sharedInstance.currentUser
+            let uID = Platform.sharedInstance.currentUser.ID.nonUniqueIdentifier
             
             let mailSubject = NSLocalizedString("Improve Parents App - iOS", comment: "Improve Parents App - iOS")
             let recipientEmail = NSLocalizedString("support@edmodo.com", comment: "support@edmodo.com")
@@ -125,7 +125,7 @@ extension RatingsHandler
             if let controller = mailController
             {
                 controller.setToRecipients([recipientEmail])
-                controller.setSubject("\(mailSubject) (uid:\(currentUser?.ID.nonUniqueIdentifier))")
+                controller.setSubject("\(mailSubject) (uid:\(uID))")
                 controller.setMessageBody(messageBody, isHTML: false)
             }
         }
