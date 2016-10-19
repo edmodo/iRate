@@ -65,22 +65,22 @@ extension RatingsHandler
                                         noActionBlock:((_ action: UIAlertAction) -> Void)? = nil) -> UIAlertController
     {
         let message = NSLocalizedString("Do you like our App?", comment: "Do you like our App?")
-        let alertController = UIAlertController.alertWithPrompt(
-            nil,
-            message: message,
-            yesActionBlock:
+        let alertController = UIAlertController.init(title: "", message: message, preferredStyle: .alert)
+        
+        let yesAction = UIAlertAction(title: "", style: .default, handler:
             {(action) in
-                iRate.sharedInstance().promptIfNetworkAvailable()
-                
-                if let yesBlock = yesActionBlock
-                { yesBlock(action) }
-            },
-            noActionBlock:
-            {(action) in
-                if let noBlock = noActionBlock
-                { noBlock(action) }
-            }
-        )
+            iRate.sharedInstance().promptIfNetworkAvailable()
+            
+            if let yesBlock = yesActionBlock
+            { yesBlock(action) }
+            })
+        let noAction = UIAlertAction(title: "", style: .cancel, handler: {(action) in
+            if let noBlock = noActionBlock
+            { noBlock(action) }
+        })
+        
+        alertController.addAction(yesAction)
+        alertController.addAction(noAction)
         
         return alertController
     }
@@ -90,21 +90,20 @@ extension RatingsHandler
     {
         let message = NSLocalizedString("Would you like to help us improve?", comment: "Would you like to help us improve?")
         let yesTitle = NSLocalizedString("Sure", comment: "Sure")
+        let alertController = UIAlertController.init(title: "", message: message, preferredStyle: .alert)
         
-        let alertController = UIAlertController.alertWithPrompt(
-            nil, message: message,
-            yesTitle: yesTitle,
-            yesActionBlock:
+        let yesAction = UIAlertAction(title: yesTitle, style: .default, handler:
             { (action) in
                 if let yesBlock = yesActionBlock
                 { yesBlock(action) }
-            },
-            noActionBlock:
-            { (action) in
-                if let noBlock = noActionBlock
-                { noBlock(action) }
-            }
-        )
+        })
+        let noAction = UIAlertAction(title: "", style: .cancel, handler: { (action) in
+            if let noBlock = noActionBlock
+            { noBlock(action) }
+        })
+        
+        alertController.addAction(yesAction)
+        alertController.addAction(noAction)
         
         return alertController
     }
