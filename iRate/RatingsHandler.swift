@@ -17,23 +17,23 @@ enum RatingsKey : String
     case NumOfUses = "NumOfUsesSince-v1.6.0"
 }
 
-public class RatingsHandler : NSObject
+open class RatingsHandler : NSObject
 {
     static let sharedInstance = RatingsHandler()
     
     let useCountForRatingsPrompt: Int = 3
 
-    private override init()
+    fileprivate override init()
     {
         super.init()
     }
     
-    public func setup(messageTitle title:String)
+    open func setup(messageTitle title:String)
     {
         self.configureiRate(title)
     }
     
-    private func configureiRate(messageTitle:String)
+    fileprivate func configureiRate(_ messageTitle:String)
     {
         //configure iRate
         iRate.sharedInstance().eventsUntilPrompt = 0
@@ -61,50 +61,49 @@ public class RatingsHandler : NSObject
 // MARK: - Ratings Pre-Prompt Alerts
 extension RatingsHandler
 {
-    internal func ratingsPrePromptAlert(yesActionBlock:((action: UIAlertAction) -> Void)? = nil,
-                                        noActionBlock:((action: UIAlertAction) -> Void)? = nil) -> UIAlertController
+    internal func ratingsPrePromptAlert(_ yesActionBlock:((_ action: UIAlertAction) -> Void)? = nil,
+                                        noActionBlock:((_ action: UIAlertAction) -> Void)? = nil) -> UIAlertController
     {
         let message = NSLocalizedString("Do you like our App?", comment: "Do you like our App?")
-        let alertController = UIAlertController.alertWithPrompt(
-            nil,
-            message: message,
-            yesActionBlock:
+        let alertController = UIAlertController.init(title: "", message: message, preferredStyle: .alert)
+        
+        let yesAction = UIAlertAction(title: "", style: .default, handler:
             {(action) in
-                iRate.sharedInstance().promptIfNetworkAvailable()
-                
-                if let yesBlock = yesActionBlock
-                { yesBlock(action: action) }
-            },
-            noActionBlock:
-            {(action) in
-                if let noBlock = noActionBlock
-                { noBlock(action: action) }
-            }
-        )
+            iRate.sharedInstance().promptIfNetworkAvailable()
+            
+            if let yesBlock = yesActionBlock
+            { yesBlock(action) }
+            })
+        let noAction = UIAlertAction(title: "", style: .cancel, handler: {(action) in
+            if let noBlock = noActionBlock
+            { noBlock(action) }
+        })
+        
+        alertController.addAction(yesAction)
+        alertController.addAction(noAction)
         
         return alertController
     }
     
-    internal func helpUsImproveAlert(yesActionBlock:((action: UIAlertAction) -> Void)? = nil,
-                                     noActionBlock:((action: UIAlertAction) -> Void)? = nil) -> UIAlertController
+    internal func helpUsImproveAlert(_ yesActionBlock:((_ action: UIAlertAction) -> Void)? = nil,
+                                     noActionBlock:((_ action: UIAlertAction) -> Void)? = nil) -> UIAlertController
     {
         let message = NSLocalizedString("Would you like to help us improve?", comment: "Would you like to help us improve?")
         let yesTitle = NSLocalizedString("Sure", comment: "Sure")
+        let alertController = UIAlertController.init(title: "", message: message, preferredStyle: .alert)
         
-        let alertController = UIAlertController.alertWithPrompt(
-            nil, message: message,
-            yesTitle: yesTitle,
-            yesActionBlock:
+        let yesAction = UIAlertAction(title: yesTitle, style: .default, handler:
             { (action) in
                 if let yesBlock = yesActionBlock
-                { yesBlock(action: action) }
-            },
-            noActionBlock:
-            { (action) in
-                if let noBlock = noActionBlock
-                { noBlock(action: action) }
-            }
-        )
+                { yesBlock(action) }
+        })
+        let noAction = UIAlertAction(title: "", style: .cancel, handler: { (action) in
+            if let noBlock = noActionBlock
+            { noBlock(action) }
+        })
+        
+        alertController.addAction(yesAction)
+        alertController.addAction(noAction)
         
         return alertController
     }
@@ -116,7 +115,7 @@ extension RatingsHandler
         if MFMailComposeViewController.canSendMail()
         {
             mailController = MFMailComposeViewController.init()
-            let currentUser = Platform.sharedInstance.currentUser
+            let uID = Platform.sharedInstance.currentUser.ID.nonUniqueIdentifier
             
             let mailSubject = NSLocalizedString("Improve Parents App - iOS", comment: "Improve Parents App - iOS")
             let recipientEmail = NSLocalizedString("support@edmodo.com", comment: "support@edmodo.com")
@@ -125,7 +124,7 @@ extension RatingsHandler
             if let controller = mailController
             {
                 controller.setToRecipients([recipientEmail])
-                controller.setSubject("\(mailSubject) (uid:\(currentUser?.ID.nonUniqueIdentifier))")
+                controller.setSubject("\(mailSubject) (uid:\(uID))")
                 controller.setMessageBody(messageBody, isHTML: false)
             }
         }
@@ -138,21 +137,21 @@ extension RatingsHandler : iRateDelegate
 {
     public func iRateDidPromptForRating()
     {
-        EDMixpanel.sharedInstance.trackEvent("rate-app_view", params:[String : AnyObject]())
+        EDMixpanel.sharedInstance.trackEvent(withEventName: "rate-app_view", params:[String : AnyObject]())
     }
     
     public func iRateUserDidAttemptToRateApp()
     {
-        EDMixpanel.sharedInstance.trackEvent("rate-app_rate-click", params:[String : AnyObject]())
+        EDMixpanel.sharedInstance.trackEvent(withEventName: "rate-app_rate-click", params:[String : AnyObject]())
     }
     
     public func iRateUserDidDeclineToRateApp()
     {
-        EDMixpanel.sharedInstance.trackEvent("rate-app_no-click", params:[String : AnyObject]())
+        EDMixpanel.sharedInstance.trackEvent(withEventName: "rate-app_no-click", params:[String : AnyObject]())
     }
     
     public func iRateUserDidRequestReminderToRateApp()
     {
-        EDMixpanel.sharedInstance.trackEvent("rate-app_remind-click", params:[String : AnyObject]())
+        EDMixpanel.sharedInstance.trackEvent(withEventName: "rate-app_remind-click", params:[String : AnyObject]())
     }
 }
