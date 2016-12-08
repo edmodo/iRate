@@ -137,21 +137,21 @@ extension RatingsHandler : iRateDelegate
 {
     public func iRateDidPromptForRating()
     {
-        EDMixpanel.sharedInstance.trackEvent("rate-app_view", params:[String : AnyObject]())
+        EDMixpanel.sharedInstance.trackEvent(withEventName: "rate-app_view", params:[String : AnyObject]())
     }
     
     public func iRateUserDidAttemptToRateApp()
     {
-        EDMixpanel.sharedInstance.trackEvent("rate-app_rate-click", params:[String : AnyObject]())
+        EDMixpanel.sharedInstance.trackEvent(withEventName: "rate-app_rate-click", params:[String : AnyObject]())
     }
     
     public func iRateUserDidDeclineToRateApp()
     {
-        EDMixpanel.sharedInstance.trackEvent("rate-app_no-click", params:[String : AnyObject]())
+        EDMixpanel.sharedInstance.trackEvent(withEventName: "rate-app_no-click", params:[String : AnyObject]())
     }
     
     public func iRateUserDidRequestReminderToRateApp()
     {
-        EDMixpanel.sharedInstance.trackEvent("rate-app_remind-click", params:[String : AnyObject]())
+        EDMixpanel.sharedInstance.trackEvent(withEventName: "rate-app_remind-click", params:[String : AnyObject]())
     }
 }
