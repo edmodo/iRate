@@ -67,14 +67,14 @@ extension RatingsHandler
         let message = NSLocalizedString("Do you like our App?", comment: "Do you like our App?")
         let alertController = UIAlertController.init(title: "", message: message, preferredStyle: .alert)
         
-        let yesAction = UIAlertAction(title: "", style: .default, handler:
+        let yesAction = UIAlertAction(title: NSLocalizedString("Yes", comment: "Yes"), style: .default, handler:
             {(action) in
             iRate.sharedInstance().promptIfNetworkAvailable()
             
             if let yesBlock = yesActionBlock
             { yesBlock(action) }
             })
-        let noAction = UIAlertAction(title: "", style: .cancel, handler: {(action) in
+        let noAction = UIAlertAction(title: NSLocalizedString("No", comment: "No"), style: .cancel, handler: {(action) in
             if let noBlock = noActionBlock
             { noBlock(action) }
         })
@@ -97,7 +97,7 @@ extension RatingsHandler
                 if let yesBlock = yesActionBlock
                 { yesBlock(action) }
         })
-        let noAction = UIAlertAction(title: "", style: .cancel, handler: { (action) in
+        let noAction = UIAlertAction(title: NSLocalizedString("No", comment: "No"), style: .cancel, handler: { (action) in
             if let noBlock = noActionBlock
             { noBlock(action) }
         })
